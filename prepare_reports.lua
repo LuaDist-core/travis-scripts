@@ -57,7 +57,7 @@ for _, dir in pairs(directories) do
 
     write_file(pl.path.join(dest_dir, "install.md"), read_file(report_file_path))
 
-    local status_file_content = read_file(pl.path.join(report_dirname, "install_status"))
+    local status_file_content = read_file(pl.path.join(dir, "install_status"))
 
     datayml = datayml .. "    - version: " .. version_string .. "\n"
     datayml = datayml .. "      success: " .. ((status_file_content == "success") and "true" or "false") .. "\n"
