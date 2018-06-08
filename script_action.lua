@@ -10,16 +10,16 @@ local versions = {
   "lua 5.3.2"
 }
 
-local pkg_name        = os.getenv("PKG_NAME")        or error("PKG_NAME must be set")
-local pkg_install_dir = os.getenv("PKG_INSTALL_DIR") or error("PKG_INSTALL_DIR must be set")
-local lua_bin         = os.getenv("LUA_BIN")         or error("LUA_BIN must be set")
-local luadist_lib     = os.getenv("LUADIST_LIB")     or error("LUADIST_LIB must be set")
+local pkg_name       = os.getenv("PKG_NAME")       or error("PKG_NAME must be set")
+local pkg_output_dir = os.getenv("PKG_OUTPUT_DIR") or error("PKG_OUTPUT_DIR must be set")
+local lua_bin        = os.getenv("LUA_BIN")        or error("LUA_BIN must be set")
+local luadist_lib    = os.getenv("LUADIST_LIB")    or error("LUADIST_LIB must be set")
 
 local luadist = lua_bin .. " " .. luadist_lib
 
 local everything_ok = true
 for _, version in pairs(versions) do
-  local install_dir = pl.path.join(pkg_install_dir, version)
+  local install_dir = pl.path.join(pkg_output_dir, version, "install")
   local cmd = luadist .. " \"" .. install_dir  .. "\" install \"" .. version .. "\" " .. pkg_name
   print("+ " .. cmd)
   local ok = pl.utils.execute(cmd)

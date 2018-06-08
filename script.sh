@@ -8,7 +8,8 @@ LUADIST_DIR="$PKG_DIR/../_luadist_bootstrap/_install"
 TRAVIS_SCRIPTS_DIR="$PKG_DIR/../_travis_scripts"
 
 export PKG_NAME="`basename $PKG_DIR`"
-export PKG_INSTALL_DIR="$PKG_DIR/../_luadist_install"
+export PKG_OUTPUT_DIR="$PKG_DIR/../_luadist_output"
+
 export LUA_BIN="$LUADIST_DIR/bin/lua"
 export LUADIST_LIB="$LUADIST_DIR/lib/lua/luadist.lua"
 

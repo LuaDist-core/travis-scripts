@@ -10,7 +10,7 @@ LUADIST_DIR="$PKG_DIR/../_luadist_bootstrap/_install"
 TRAVIS_SCRIPTS_DIR="$PKG_DIR/../_travis_scripts"
 
 export PKG_NAME="`basename $PKG_DIR`"
-export PKG_INSTALL_DIR="$PKG_DIR/../_luadist_install"
+export PKG_OUTPUT_DIR="$PKG_DIR/../_luadist_output"
 export LUA_BIN="$LUADIST_DIR/bin/lua"
 export LUADIST_LIB="$LUADIST_DIR/lib/lua/luadist.lua"
 
@@ -21,7 +21,7 @@ git config --global user.email "travis@travis-ci.org"
 git config --global user.name "Travis CI"
 git clone "https://$REPORT_REPO" "$CLONED_REPO"
 
-$LUA_BIN $TRAVIS_SCRIPTS_DIR/push_reports.lua
+$LUA_BIN $TRAVIS_SCRIPTS_DIR/prepare_reports.lua
 
 cd "$CLONED_REPO"
 

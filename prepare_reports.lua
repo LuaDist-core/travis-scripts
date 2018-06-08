@@ -4,9 +4,9 @@ pl.path  = require 'pl.path'
 pl.utils = require 'pl.utils'
 pl.pretty = require 'pl.pretty'
 
-local pkg_name        = os.getenv("PKG_NAME")        or error("PKG_NAME must be set")
-local pkg_install_dir = os.getenv("PKG_INSTALL_DIR") or error("PKG_INSTALL_DIR must be set")
-local cloned_repo     = os.getenv("CLONED_REPO")     or error("CLONED_REPO must be set")
+local pkg_name       = os.getenv("PKG_NAME")       or error("PKG_NAME must be set")
+local pkg_output_dir = os.getenv("PKG_OUTPUT_DIR") or error("PKG_OUTPUT_DIR must be set")
+local cloned_repo    = os.getenv("CLONED_REPO")    or error("CLONED_REPO must be set")
 
 local function run_cmd(cmd)
   print("+ " .. cmd)
@@ -41,14 +41,16 @@ end
 
 local datayml = "name: Linux\nversions:\n"
 
-local directories = pl.dir.getdirectories(pkg_install_dir)
+local directories = pl.dir.getdirectories(pkg_output_dir)
 for _, dir in pairs(directories) do
-  local files = pl.dir.getfiles(dir, "*.md")
+  local install_dir = pl.path.join(dir, "install")
+  local files = pl.dir.getfiles(install_dir, "*.md")
+
   if #files == 1 then
     local report_file_path = files[1]
     local report_dirname = pl.path.dirname(report_file_path)
 
-    local version_string = string.sub(pl.path.basename(report_dirname), ("lua "):len() + 1)
+    local version_string = string.sub(pl.path.basename(dir), ("lua "):len() + 1)
     local dest_dir = pl.path.join(cloned_repo, "packages", pkg_name, "linux", version_string)
 
     run_cmd("mkdir -p \"" .. dest_dir .. "\"")
