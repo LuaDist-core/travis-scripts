@@ -13,5 +13,8 @@ export PKG_OUTPUT_DIR="$PKG_DIR/../_luadist_output"
 export LUA_BIN="$LUADIST_DIR/bin/lua"
 export LUADIST_LIB="$LUADIST_DIR/lib/lua/luadist.lua"
 
+# remove everything except .git and .rockspec file
+find . | grep -Ev -e "\./\.git($|/)" -e "\./.*\.rockspec" -e "^\.$" | xargs rm -rf
+
 $LUA_BIN $TRAVIS_SCRIPTS_DIR/script_action.lua
 
