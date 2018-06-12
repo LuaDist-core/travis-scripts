@@ -16,5 +16,6 @@ export LUADIST_LIB="$LUADIST_DIR/lib/lua/luadist.lua"
 # remove everything except .git and .rockspec file
 find . | grep -Ev -e "\./\.git($|/)" -e "\./.*\.rockspec" -e "^\.$" | xargs rm -rf
 
+export LUA_PATH="$TRAVIS_SCRIPTS_DIR/?.lua;;"
 $LUA_BIN $TRAVIS_SCRIPTS_DIR/script_action.lua
 

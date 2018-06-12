@@ -1,58 +1,46 @@
-local pl = {}
-pl.dir = require 'pl.dir'
-pl.path  = require 'pl.path'
-pl.utils = require 'pl.utils'
+local pl = require 'pl.import_into'()
 
--- Specify Lua versions to test the package with.
--- Every name must be a valid LuaDist package.
-local versions = {
-  "lua 5.1.5-1",
-  "lua 5.2.4-1",
-  "lua 5.3.2"
+local config = require "ci_config"
+
+local env = {
+  pkg_name       = os.getenv("PKG_NAME")       or error("PKG_NAME must be set"),
+  pkg_output_dir = os.getenv("PKG_OUTPUT_DIR") or error("PKG_OUTPUT_DIR must be set"),
+  lua_bin        = os.getenv("LUA_BIN")        or error("LUA_BIN must be set"),
+  luadist_lib    = os.getenv("LUADIST_LIB")    or error("LUADIST_LIB must be set"),
+
+  STATUS_SUCCESS = "success",
+  STATUS_SKIP = "skip",
+  STATUS_FAIL = "fail",
 }
 
-local pkg_name       = os.getenv("PKG_NAME")       or error("PKG_NAME must be set")
-local pkg_output_dir = os.getenv("PKG_OUTPUT_DIR") or error("PKG_OUTPUT_DIR must be set")
-local lua_bin        = os.getenv("LUA_BIN")        or error("LUA_BIN must be set")
-local luadist_lib    = os.getenv("LUADIST_LIB")    or error("LUADIST_LIB must be set")
+env.luadist = env.lua_bin .. " " .. env.luadist_lib
 
-local luadist = lua_bin .. " " .. luadist_lib
-
--- Helper function to write status into a file.
-local function write_status(file_path, status)
-  if type(status) == "boolean" then
-	  status = status and "success" or "fail"
-  end
-
-  local file = io.open(file_path, "w")
-  if not file then
-    print("Something went wrong writing '" .. file_path .. "', exiting...")
-    os.exit(1)
-  end
-
-  file:write(status)
-  file:close()
+local function status_to_bool(status)
+  return status ~= env.STATUS_FAIL
 end
 
--- install_task performs an installation of the given package using
--- a specific Lua version
-local function install_task(version)
-  local version_dir = pl.path.join(pkg_output_dir, version)
-  local install_dir = pl.path.join(version_dir, "install")
-
-  local cmd = luadist .. " \"" .. install_dir  .. "\" install \"" .. version .. "\" " .. pkg_name
-  print("+ " .. cmd)
-  local ok = pl.utils.execute(cmd)
-  return ok
-end
 
 local everything_ok = true
-for _, version in pairs(versions) do
-  local version_dir = pl.path.join(pkg_output_dir, version)
+for _, version in pairs(config.versions) do
+  local version_dir = pl.path.join(env.pkg_output_dir, version)
+  local status
 
-  local ok = install_task(version)
-  write_status(pl.path.join(version_dir, "install_status"), ok)
-  everything_ok = everything_ok and ok
+  for _, task in ipairs(config.tasks) do
+    print()
+    print("################################")
+    print("# Running '" .. task.task_id() .. "' task")
+    print("# Lua version: " .. version)
+    print("################################")
+    print()
+
+    local report
+    status, report = task.task(env, version)
+    pl.file.write(pl.path.join(version_dir, task.task_id() .. "_status"), status)
+    everything_ok = everything_ok and status_to_bool(status)
+    pl.file.write(pl.path.join(version_dir, task.task_id() .. "_report.md"), report)
+
+    print()
+  end
 end
 
 os.exit(everything_ok and 0 or 1)

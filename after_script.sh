@@ -21,6 +21,7 @@ git config --global user.email "travis@travis-ci.org"
 git config --global user.name "Travis CI"
 git clone "https://$REPORT_REPO" "$CLONED_REPO"
 
+export LUA_PATH="$TRAVIS_SCRIPTS_DIR/?.lua;;"
 $LUA_BIN $TRAVIS_SCRIPTS_DIR/prepare_reports.lua
 
 cd "$CLONED_REPO"
