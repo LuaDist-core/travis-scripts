@@ -10,7 +10,7 @@ config.versions = {
 
 config.tasks = {
 	require "tasks.install",
-	require "tasks.require"
+	--require "tasks.require"
 }
 
 return config
